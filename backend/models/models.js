@@ -89,7 +89,7 @@ let eventDataSchema = new Schema({
 
 // Created the new collection to hold the Organization Data.
 let organizationDataSchema = new Schema({
-    org_id: { type: String, default: uuid.v1 },
+    _id: { type: String, default: uuid.v1 },
     OrgName: { type: String, require: true},
 },{
     collection: 'organizationData'
