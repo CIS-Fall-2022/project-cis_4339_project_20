@@ -32,6 +32,18 @@ router.get("/id/:id", (req, res, next) => {
     );
 });
 
+//DELETE primaryData by ID
+router.delete("/id/:id", (req, res, next) => {
+    primarydata.deleteOne({ _id: req.params.id }, (error, data) => {
+        if (error) {
+            return next(error);
+        } else {
+             res.status(200).json({
+            msg: data
+            })
+        }
+    })
+});
 //GET entries based on search query
 //Ex: '...?firstName=Bob&lastName=&searchBy=name' 
 router.get("/search/", (req, res, next) => { 
