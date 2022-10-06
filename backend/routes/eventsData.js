@@ -135,4 +135,36 @@ router.delete("/id/:id", (req, res, next) => {
         }
     })
 });
+
+//GET Number of Attendees for an Event
+router.get("/attendees/:id", (req, res, next) => {
+    eventdata.find({ _id: req.params.id }, (error, data) => {
+        if (error) {
+            return next(error)
+        } else {
+            res.json(data[0].attendees.length) 
+        }
+    })
+});
+
+//GET events from the past 2 months
+router.get("/organization/:name", (req, res, next) => {
+    let dbQuery = "";
+    dbQuery = { organization: req.params.name };
+    
+    eventdata.find(dbQuery,(error, data) => {
+        let today = new Date();
+        let twoMonthsAgo = new Date();
+            twoMonthsAgo.setMonth(today.getMonth() - 2);
+        let filteredData = data.filter((event) => {
+        let eventDate = new Date(event.date);
+            return eventDate > twoMonthsAgo;
+        });
+            if (error) {
+            return next(error);
+            } else {
+                res.json(filteredData);
+            }
+    });
+});
 module.exports = router;
