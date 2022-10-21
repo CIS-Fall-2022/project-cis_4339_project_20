@@ -6,7 +6,7 @@ let { eventdata } = require("../models/models");
 
 //GET all entries
 router.get("/", (req, res, next) => { 
-    eventdata.find( 
+    eventdata.find( {organization_id: process.env.ORGANIZATION},
         (error, data) => {
             if (error) {
                 return next(error);
@@ -19,7 +19,7 @@ router.get("/", (req, res, next) => {
 
 //GET single entry by ID
 router.get("/id/:id", (req, res, next) => { 
-    eventdata.find({ _id: req.params.id }, (error, data) => {
+    eventdata.find({ _id: req.params.id, organization_id: process.env.ORGANIZATION }, (error, data) => {
         if (error) {
             return next(error)
         } else {
@@ -39,7 +39,7 @@ router.get("/search/", (req, res, next) => {
             date:  req.query["eventDate"]
         }
     };
-    eventdata.find( 
+    eventdata.find( {organization_id: process.env.ORGANIZATION},
         dbQuery, 
         (error, data) => { 
             if (error) {
@@ -54,7 +54,7 @@ router.get("/search/", (req, res, next) => {
 //GET events for which a client is signed up
 router.get("/client/:id", (req, res, next) => { 
     eventdata.find( 
-        { attendees: req.params.id }, 
+        { attendees: req.params.id, organization_id: process.env.ORGANIZATION }, 
         (error, data) => { 
             if (error) {
                 return next(error);
@@ -67,7 +67,8 @@ router.get("/client/:id", (req, res, next) => {
 
 //POST
 router.post("/", (req, res, next) => { 
-    eventdata.create( 
+    req.body.organization_id = process.env.ORGANIZATION
+    eventdata.create(
         req.body, 
         (error, data) => { 
             if (error) {
@@ -82,7 +83,7 @@ router.post("/", (req, res, next) => {
 //PUT
 router.put("/:id", (req, res, next) => {
     eventdata.findOneAndUpdate(
-        { _id: req.params.id },
+        { _id: req.params.id, organization_id: process.env.ORGANIZATION },
         req.body,
         (error, data) => {
             if (error) {
@@ -98,7 +99,7 @@ router.put("/:id", (req, res, next) => {
 router.put("/addAttendee/:id", (req, res, next) => {
     //only add attendee if not yet signed uo
     eventdata.find( 
-        { _id: req.params.id, attendees: req.body.attendee }, 
+        { _id: req.params.id, attendees: req.body.attendee, organization_id: process.env.ORGANIZATION }, 
         (error, data) => { 
             if (error) {
                 return next(error);
