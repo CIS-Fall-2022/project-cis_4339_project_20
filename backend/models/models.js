@@ -41,7 +41,7 @@ let primaryDataSchema = new Schema({
             type: String,
         }
     },
-    organization: {
+    organization_id: {
         type: mongoose.Schema.Types.ObjectId,
       ref: 'organizationData'
     }
@@ -62,7 +62,7 @@ let eventDataSchema = new Schema({
     },
     date: {
         type: Date,
-        required: true
+        
     },
     address: {
         line1: {
@@ -87,7 +87,7 @@ let eventDataSchema = new Schema({
     attendees: [{
         type: String
     }],
-    organization: {
+    organization_id: {
         type: mongoose.Schema.Types.ObjectId,
       ref: 'organizationData'
     }
