@@ -7,7 +7,7 @@ let { eventdata } = require("../models/models");
 
 //GET all entries
 router.get("/", (req, res, next) => { 
-    primarydata.find( 
+    primarydata.find({organization_id: process.env.ORGANIZATION}, 
         (error, data) => {
             if (error) {
                 return next(error);
@@ -20,8 +20,7 @@ router.get("/", (req, res, next) => {
 
 //GET single entry by ID
 router.get("/id/:id", (req, res, next) => {
-    primarydata.find( 
-        { _id: req.params.id }, 
+    primarydata.find({ _id: req.params.id, organization_id: process.env.ORGANIZATION}, 
         (error, data) => {
             if (error) {
                 return next(error);
@@ -34,7 +33,8 @@ router.get("/id/:id", (req, res, next) => {
 
 //DELETE primaryData by ID
 router.delete("/id/:id", (req, res, next) => {
-    primarydata.deleteOne({ _id: req.params.id }, (error, data) => {
+    primarydata.deleteOne({ _id: req.params.id, organization_id: process.env.ORGANIZATION},
+         (error, data) => {
         if (error) {
             return next(error);
         } else {
@@ -55,7 +55,7 @@ router.get("/search/", (req, res, next) => {
             "phoneNumbers.primaryPhone": { $regex: `^${req.query["phoneNumbers.primaryPhone"]}`, $options: "i" }
         }
     };
-    primarydata.find( 
+    primarydata.find( {organization_id: process.env.ORGANIZATION},
         dbQuery, 
         (error, data) => { 
             if (error) {
@@ -69,7 +69,8 @@ router.get("/search/", (req, res, next) => {
 
 
 //POST
-router.post("/", (req, res, next) => { 
+router.post("/", (req, res, next) => {
+    req.body.organization_id = process.env.ORGANIZATION 
     primarydata.create( 
         req.body,
         (error, data) => { 
@@ -87,8 +88,7 @@ router.post("/", (req, res, next) => {
 
 //PUT update (make sure req body doesn't have the id)
 router.put("/:id", (req, res, next) => { 
-    primarydata.findOneAndUpdate( 
-        { _id: req.params.id }, 
+    primarydata.findOneAndUpdate({ _id: req.params.id, organization_id: process.env.ORGANIZATION}, 
         req.body,
         (error, data) => {
             if (error) {
