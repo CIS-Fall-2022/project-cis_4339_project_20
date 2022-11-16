@@ -9,7 +9,8 @@ router.get("/", (req, res, next) => {
     eventdata.find( {organization_id: process.env.ORGANIZATION},
         (error, data) => {
             if (error) {
-                return next(error);
+                return next(error),
+                res.status(404).send('Could not retrieve all events.'); //error response with a status number when unable to retrieve all events.
             } else {
                 res.json(data);
             }
@@ -21,7 +22,8 @@ router.get("/", (req, res, next) => {
 router.get("/id/:id", (req, res, next) => { 
     eventdata.find({ _id: req.params.id, organization_id: process.env.ORGANIZATION }, (error, data) => {
         if (error) {
-            return next(error)
+            return next(error),
+            res.status(404).send('Could not find eevent by given ID. Please check spelling and character placement!')//error message when client cannot be found by ID. Spell check and character placement check for ID's with more than just alphabetical characters.
         } else {
             res.json(data)
         }
@@ -43,7 +45,8 @@ router.get("/search/", (req, res, next) => {
         dbQuery, 
         (error, data) => { 
             if (error) {
-                return next(error);
+                return next(error),
+                res.status(404).send('Could not find event, please check spelling!');//error response 404 event not found
             } else {
                 res.json(data);
             }
@@ -57,7 +60,8 @@ router.get("/client/:id", (req, res, next) => {
         { attendees: req.params.id, organization_id: process.env.ORGANIZATION }, 
         (error, data) => { 
             if (error) {
-                return next(error);
+                return next(error),
+                res.status(404).send('Could not find events tied to Client'); //error response showing no events tied to the selected client
             } else {
                 res.json(data);
             }
@@ -72,7 +76,8 @@ router.post("/", (req, res, next) => {
         req.body, 
         (error, data) => { 
             if (error) {
-                return next(error);
+                return next(error),
+                res.status(400).send('The event was NOT added to the database.');
             } else {
                 res.json(data);
             }
@@ -87,7 +92,8 @@ router.put("/:id", (req, res, next) => {
         req.body,
         (error, data) => {
             if (error) {
-                return next(error);
+                return next(error),
+                res.status(400).send('ID was not added.');
             } else {
                 res.json(data);
             }
@@ -111,7 +117,8 @@ router.put("/addAttendee/:id", (req, res, next) => {
                         (error, data) => {
                             if (error) {
                                 consol
-                                return next(error);
+                                return next(error),
+                                res.status(400).send('Attendee was NOT able to be added.');
                             } else {
                                 res.json(data);
                             }
@@ -128,7 +135,8 @@ router.put("/addAttendee/:id", (req, res, next) => {
 router.delete("/id/:id", (req, res, next) => {
     eventdata.deleteOne({ _id: req.params.id }, (error, data) => {
         if (error) {
-            return next(error);
+            return next(error),
+            res.status(404).send('Unable to delete event.');
         } else {
             res.status(200).json({
             msg: data
@@ -141,7 +149,8 @@ router.delete("/id/:id", (req, res, next) => {
 router.get("/attendees/:id", (req, res, next) => {
     eventdata.find({ _id: req.params.id }, (error, data) => {
         if (error) {
-            return next(error)
+            return next(error),
+            res.status(404).send('Unable to find Attendees')
         } else {
             res.json(data[0].attendees.length) 
         }
@@ -162,7 +171,8 @@ router.get("/organization/:name", (req, res, next) => {
             return eventDate > twoMonthsAgo;
         });
             if (error) {
-            return next(error);
+            return next(error),
+            res.status(404).send('Could not find events from the past 2 months');
             } else {
                 res.json(filteredData);
             }

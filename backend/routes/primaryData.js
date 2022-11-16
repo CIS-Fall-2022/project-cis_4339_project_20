@@ -10,7 +10,8 @@ router.get("/", (req, res, next) => {
     primarydata.find({organization_id: process.env.ORGANIZATION}, 
         (error, data) => {
             if (error) {
-                return next(error);
+                return next(error),
+                res.status(404).send('Could not retrieve all clients.'); //error code response sent with a status number and message to be displayed.
             } else {
                 res.json(data);
             }
@@ -23,7 +24,8 @@ router.get("/id/:id", (req, res, next) => {
     primarydata.find({ _id: req.params.id, organization_id: process.env.ORGANIZATION}, 
         (error, data) => {
             if (error) {
-                return next(error);
+                return next(error),
+                res.status(404).send('Could not find client by given ID. Please check spelling and character placement!'); //error response to check spelling for searches.
             } else {
                 res.json(data);
             }
@@ -36,7 +38,8 @@ router.delete("/id/:id", (req, res, next) => {
     primarydata.deleteOne({ _id: req.params.id, organization_id: process.env.ORGANIZATION},
          (error, data) => {
         if (error) {
-            return next(error);
+            return next(error),
+            res.status(400).send('Unable to delete client.'); //error response if client cannot be deleted.
         } else {
              res.status(200).json({
             msg: data
@@ -59,7 +62,8 @@ router.get("/search/", (req, res, next) => {
         dbQuery, 
         (error, data) => { 
             if (error) {
-                return next(error);
+                return next(error),
+                res.status(404).send('Could not find client, please check spelling!');//error response for client not found with spell check.
             } else {
                 res.json(data);
             }
@@ -75,7 +79,8 @@ router.post("/", (req, res, next) => {
         req.body,
         (error, data) => { 
             if (error) {
-                return next(error);
+                return next(error),
+                res.status(400).send('The client was NOT added to the database.');
             } else {
                 res.json(data); 
             }
@@ -92,7 +97,8 @@ router.put("/:id", (req, res, next) => {
         req.body,
         (error, data) => {
             if (error) {
-                return next(error);
+                return next(error),
+                res.status(400).send('ID not added.');
             } else {
                 res.json(data);
             }
