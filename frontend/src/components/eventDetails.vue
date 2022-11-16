@@ -190,11 +190,11 @@
         <!-- grid container -->
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
           <div class="flex justify-between mt-10 mr-20">
-            <button
-              @click="handleEventUpdate"
-              type="submit"
-              class="bg-red-700 text-white rounded"
-            >Update Event</button>
+          <button
+            class="bg-red-700 text-white rounded"
+            @click="DeleteEvent"
+            type="submit"
+          >Delete Event</button>
           </div>
           <div class="flex justify-between mt-10 mr-20">
             <button
@@ -203,6 +203,14 @@
               @click="$router.go(-1)"
             >Go back</button>
           </div>
+          <div class="flex justify-between mt-10 mr-20">
+            <button
+              @click="handleEventUpdate"
+              type="submit"
+              class="bg-red-700 text-white rounded"
+            >Update Event</button>
+          </div>
+          
         </div>
 
         <hr class="mt-10 mb-10" />
@@ -322,6 +330,15 @@ export default {
     },
     editClient(clientID) {
       this.$router.push({ name: "updateclient", params: { id: clientID } });
+    },
+    DeleteEvent() {
+      let apiURL = import.meta.env.VITE_ROOT_API + `/eventdata/id/${this.id}`;
+      axios.delete(apiURL, this.client).then(() => {
+        alert("Event has been deleted.");
+        this.$router.back().catch((error) => {
+          console.log(error);
+        });
+      });
     },
   },
   // sets validations for the various data properties
