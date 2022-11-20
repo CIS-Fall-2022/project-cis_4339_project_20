@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const mongoose = require("mongoose");
 
 //importing data model schemas
 let { eventdata } = require("../models/models"); 
@@ -145,6 +146,23 @@ router.delete("/id/:id", (req, res, next) => {
     })
 });
 
+// GET number of attendees for events in the past 2 months
+router.get("/eventGraph", (req, res, next) => { 
+    var checkDate = new Date() 
+    eventdata.aggregate([
+        {$match: {$and:[{date: {$gt : new Date(checkDate.setMonth(checkDate.getMonth() - 2)),$lt : new Date()}}, 
+            {organization_id: new mongoose.Types.ObjectId(process.env.ORGANIZATION)}]}},
+            {$group: {_id: "$eventName", total: { $sum: { $size:"$attendees"}}}}
+        ], 
+            (error, data) => {
+                if (error) {
+                    return next(error);
+                } else {
+                    res.json(data);
+                }
+            }
+        )
+});
 //GET Number of Attendees for an Event
 router.get("/attendees/:id", (req, res, next) => {
     eventdata.find({ _id: req.params.id }, (error, data) => {
