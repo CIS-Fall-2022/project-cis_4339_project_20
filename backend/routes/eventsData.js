@@ -152,7 +152,7 @@ router.get("/eventGraph", (req, res, next) => {
     eventdata.aggregate([
         {$match: {$and:[{date: {$gt : new Date(checkDate.setMonth(checkDate.getMonth() - 2)),$lt : new Date()}}, 
             {organization_id: new mongoose.Types.ObjectId(process.env.ORGANIZATION)}]}},
-            {$group: {_id: "$eventName", total: { $sum: { $size:"$attendees"}}}}
+            {$group: {_id: "$_id", total: { $sum: { $size:"$attendees"}}, "name": { "$first": "$eventName" }}}
         ], 
             (error, data) => {
                 if (error) {
