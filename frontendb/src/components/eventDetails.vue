@@ -331,7 +331,7 @@ export default {
     editClient(clientID) {
       this.$router.push({ name: "updateclient", params: { id: clientID } });
     },
-//    <!-- Deletes the event completely from the database-->
+  //<!-- Deletes the event completely from the database-->
     DeleteEvent() {
       let apiURL = import.meta.env.VITE_ROOT_API + `/eventdata/id/${this.id}`;
       axios.delete(apiURL, this.client).then(() => {

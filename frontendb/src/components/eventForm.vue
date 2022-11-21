@@ -1,12 +1,15 @@
 <template>
   <main>
     <div>
-      <h1 class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10">Update Event</h1>
+      <h1 class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10">Create New Event</h1>
     </div>
     <div class="px-10 py-20">
+      <!-- @submit.prevent stops the submit event from reloading the page-->
       <form @submit.prevent="handleSubmitForm">
+        <!-- grid container -->
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
           <h2 class="text-2xl font-bold">Event Details</h2>
+
           <!-- form field -->
           <div class="flex flex-col">
             <label class="block">
@@ -187,64 +190,8 @@
           </div>
         </div>
 
-        <!-- grid container -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
-          <div class="flex justify-between mt-10 mr-20">
-          <button
-            class="bg-red-700 text-white rounded"
-            @click="DeleteEvent"
-            type="submit"
-          >Delete Event</button>
-          </div>
-          <div class="flex justify-between mt-10 mr-20">
-            <button
-              type="reset"
-              class="border border-red-700 bg-white text-red-700 rounded"
-              @click="$router.go(-1)"
-            >Go back</button>
-          </div>
-          <div class="flex justify-between mt-10 mr-20">
-            <button
-              @click="handleEventUpdate"
-              type="submit"
-              class="bg-red-700 text-white rounded"
-            >Update Event</button>
-          </div>
-          
-        </div>
-
-        <hr class="mt-10 mb-10" />
-
-        <!-- grid container -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
-          <div>
-            <h2 class="text-2xl font-bold">List of Attendees</h2>
-            <h3 class="italic">Click table row to edit/display an entry</h3>
-          </div>
-          <div class="flex flex-col col-span-2">
-            <table class="min-w-full shadow-md rounded">
-              <thead class="bg-gray-50 text-xl">
-                <tr>
-                  <th class="p-4 text-left">Name</th>
-                  <th class="p-4 text-left">City</th>
-                  <th class="p-4 text-left">Phone Number</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-gray-300">
-                <tr
-                  @click="editClient(client.attendeeID)"
-                  v-for="client in attendeeData"
-                  :key="client._id"
-                >
-                  <td
-                    class="p-2 text-left"
-                  >{{ client.attendeeFirstName + " " + client.attendeeLastName }}</td>
-                  <td class="p-2 text-left">{{ client.attendeeCity }}</td>
-                  <td class="p-2 text-left">{{ client.attendeePhoneNumber }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+        <div class="flex justify-between mt-10 mr-20">
+          <button class="bg-red-700 text-white rounded" type="submit">Add New Event</button>
         </div>
       </form>
     </div>
@@ -252,19 +199,14 @@
 </template>
 <script>
 import useVuelidate from "@vuelidate/core";
-import { required, email, alpha, numeric } from "@vuelidate/validators";
+import { required } from "@vuelidate/validators";
 import axios from "axios";
-import { DateTime } from "luxon";
-
 export default {
-  props: ["id"],
   setup() {
     return { v$: useVuelidate({ $autoDirty: true }) };
   },
   data() {
     return {
-      attendeeIDs: [],
-      attendeeData: [],
       checkedServices: [],
       event: {
         eventName: "",
@@ -281,65 +223,38 @@ export default {
       },
     };
   },
-  beforeMount() {
-    axios
-      .get(
-        import.meta.env.VITE_ROOT_API + `/eventdata/id/${this.$route.params.id}`
-      )
-      .then((resp) => {
-        let data = resp.data[0];
-        this.event.eventName = data.eventName;
-        console.log(data.date);
-        this.event.date = DateTime.fromISO(data.date).plus({ days: 1 }).toISODate();
-        this.event.description = data.description;
-        this.checkedServices = data.services;
-        this.event.address = data.address;
-        this.attendeeIDs = data.attendees;
-        for (let i = 0; i < this.attendeeIDs.length; i++) {
-          axios
-            .get(
-              import.meta.env.VITE_ROOT_API +
-                `/primarydata/id/${this.attendeeIDs[i]}`
-            )
-            .then((resp) => {
-              let data = resp.data[0];
-              this.attendeeData.push({
-                attendeeID: this.attendeeIDs[i],
-                attendeeFirstName: data.firstName,
-                attendeeLastName: data.lastName,
-                attendeeCity: data.address.city,
-                attendeePhoneNumber: data.phoneNumbers[0].primaryPhone,
-              });
-            });
-        }
-      });
-  },
   methods: {
-    formattedDate(datetimeDB) {
-      return DateTime.fromISO(datetimeDB).plus({ days: 1 }).toLocaleString();
-    },
-    handleEventUpdate() {
-      this.event.services = this.checkedServices;
-      let apiURL = import.meta.env.VITE_ROOT_API + `/eventdata/${this.id}`;
-      axios.put(apiURL, this.event).then(() => {
-        alert("Update has been saved.");
-        this.$router.back().catch((error) => {
-          console.log(error);
-        });
-      });
-    },
-    editClient(clientID) {
-      this.$router.push({ name: "updateclient", params: { id: clientID } });
-    },
-//    <!-- Deletes the event completely from the database-->
-    DeleteEvent() {
-      let apiURL = import.meta.env.VITE_ROOT_API + `/eventdata/id/${this.id}`;
-      axios.delete(apiURL, this.client).then(() => {
-        alert("Event has been deleted.");
-        this.$router.back().catch((error) => {
-          console.log(error);
-        });
-      });
+    async handleSubmitForm() {
+      // Checks to see if there are any errors in validation
+      const isFormCorrect = await this.v$.$validate();
+      // If no errors found. isFormCorrect = True then the form is submitted
+      if (isFormCorrect) {
+        this.event.services = this.checkedServices;
+        let apiURL = import.meta.env.VITE_ROOT_API + `/eventdata`;
+        axios
+          .post(apiURL, this.event)
+          .then(() => {
+            alert("Event has been added.");
+            this.$router.push("/findEvents");
+            this.client = {
+              eventName: "",
+              services: [],
+              date: "",
+              address: {
+                line1: "",
+                line2: "",
+                city: "",
+                county: "",
+                zip: "",
+              },
+              description: "",
+            };
+            this.checkedServices = [];
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
     },
   },
   // sets validations for the various data properties

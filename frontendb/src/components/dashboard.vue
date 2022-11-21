@@ -105,7 +105,7 @@ export default {
     };
   },
   created() {
-            let apiURL = 'http://localhost:3001/eventdata/eventgraph';
+            let apiURL = 'http://localhost:3002/eventdata/eventgraph';
             axios.get(apiURL).then(res => {
                 this.Attendees = res.data;
             }).catch(error => {
@@ -117,7 +117,7 @@ export default {
       try {
         this.error = null;
         this.loading = true;
-        const url = `http://localhost:3001/eventdata/eventgraph`;
+        const url = `http://localhost:3002/eventdata/eventgraph`;
         const response = await axios.get(url);
         //"re-organizing" - mapping json from the response
         this.labels = response.data.map((item) => item.name);
