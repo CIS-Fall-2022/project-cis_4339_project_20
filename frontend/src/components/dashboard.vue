@@ -4,7 +4,7 @@ table {
   font-family: arial, sans-serif;
   border-collapse: collapse;
   width: 80%;
-  margin: 10% 10% 10% 10%;
+  margin: 5% 5% 5% 5%;
 }
 
 td, th {
