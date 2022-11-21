@@ -1,3 +1,23 @@
+//Portions of table style referenced from W3 Schools: https://www.w3schools.com/html/html_tables.asp
+<style> 
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 80%;
+  margin: 10% 10% 10% 10%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+</style>
+
 <template>
   <main>
     <div>
@@ -47,6 +67,24 @@
         </div>
       </div>
   </section>
+  <section class="container">
+  <div class="row justify-content-center">
+    <table>
+      <thead>
+        <tr class=" text-justify-content-center">
+          <th>Event Name</th>
+          <th># of Attendees</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="attendee in Attendees" :key="attendee._id">
+          <td>{{ attendee.name }}</td>
+          <td>{{ attendee.total }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  </section>
   </main>
 </template>
 
@@ -66,6 +104,14 @@ export default {
       error: null,
     };
   },
+  created() {
+            let apiURL = 'http://localhost:3000/eventdata/eventgraph';
+            axios.get(apiURL).then(res => {
+                this.Attendees = res.data;
+            }).catch(error => {
+                console.log(error)
+            });
+        },
   methods: {
     async fetchData() {
       try {
